@@ -57,58 +57,67 @@ if __name__ == '__main__':
     # Test each round
     test_acc_list = []
     
-    #devices that participate
+    #devices that participate (sample size)
     m = max(int(args.frac * args.num_users), 1)
     
     #model for local control varietes
     local_controls = [cifarCNN(args=args) for i in range(args.num_users)]
     
-    total_delta = copy.deepcopy(global_model.state_dict())
-    for key in total_delta:
-        total_delta[key] = 0.0
+    #initiliase total delta to 0 (sum of all control_delta, triangle Ci)
+    delta_c = copy.deepcopy(global_model.state_dict())
+    #sum of delta_y / sample size
+    delta_x = copy.deepcopy(global_model.state_dict())
     
+    for ci in delta_c:
+        delta_c[ci] = 0.0
+        delta_x[ci] = 0.0
+    
+    
+    #global rounds
     for epoch in tqdm(range(args.epochs)):
         local_weights, local_losses = [], []
         print(f'\n | Global Training Round : {epoch+1} |\n')
     
         global_model.train()
-        m = max(int(args.frac * args.num_users), 1)
+        # sample the users 
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)
 
         for idx in idxs_users:
             local_model = ScaffoldUpdate(args=args, dataset=train_dataset,
                                       idxs=user_groups[idx], logger=logger)
-            w, loss , control_delta= local_model.update_weights(
+            w, loss , local_delta_c, local_delta = local_model.update_weights(
                 model=copy.deepcopy(global_model), global_round=epoch, control_local
                 = local_controls[idx], control_global = control_global)
             
             local_weights.append(copy.deepcopy(w))
             local_losses.append(copy.deepcopy(loss))
             
-            for w in total_delta:
-                total_delta[w] += control_delta[w]
+            
+            for w in delta_c:
+                delta_c[w] += local_delta_c
+                delta_x[w] += local_delta
+            
             #clean
             gc.collect()
             torch.cuda.empty_cache()
         
-        #update the global control variate
-        for w in total_delta:
-            total_delta[w] /= m
+        #update the delta C (line 16)
+        for w in delta_c:
+            delta_c /= m
+            delta_x /= m
         
+        #update global control variate (line17)
         control_global_W = control_global.state_dict()
-        
+        global_weights = global_model.state_dict()
+        #equation taking Ng, global step size = 1
         for w in control_global_W:
-            control_global_W[w] += total_delta[w]
+            control_global_W[w] += (m/args.num_users)*delta_c[w]
+            global_weights[w] += delta_x[w]
         
+        #update global model
         control_global.load_state_dict(control_global_W)
-        
-
-        # update global weights
-        global_weights = average_weights(local_weights)
-
-        # update global weights
         global_model.load_state_dict(global_weights)
-    
+        #########scaffold algo complete##################
         loss_avg = sum(local_losses) / len(local_losses)
         train_loss.append(loss_avg)
     

@@ -102,6 +102,7 @@ class ScaffoldUpdate(object):
                 
                 local_weights = model.state_dict()
                 for w in local_weights:
+                    #line 10 in algo 
                     local_weights[w] = local_weights[w] - self.args.lr*(control_global_w[w]-control_local_w[w])
                 
                 #update local model params
@@ -110,7 +111,6 @@ class ScaffoldUpdate(object):
                 count += 1
                 
                 
-
                 if self.args.verbose and (batch_idx % 10 == 0):
                     print('| Global Round : {} | Local Epoch : {} | [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                         global_round, iter, batch_idx * len(images),
@@ -125,13 +125,19 @@ class ScaffoldUpdate(object):
         new_control_local_w = control_local.state_dict()
         control_delta = copy.deepcopy(control_local_w)
         global_weights = global_model.state_dict()
+        #model_weights -> y_(i)
         model_weights = model.state_dict()
+        local_delta = copy.deepcopy(model_weights)
         for w in model_weights:
+            #line 12 in algo
             new_control_local_w[w] = new_control_local_w[w] - control_global_w[w] + (global_weights[w] - model_weights[w]) / (count * self.args.lr)
-            control_delta[w] = new_control_local_w - model_weights[w]
-        model.load_state_dict(new_control_local_w)
+            #line 13
+            control_delta[w] = new_control_local_w - control_local_w[w]
+            local_delta[w] -=  global_weights[w]
+        #update new control_local model
+        control_local.load_state_dict(new_control_local_w)
         
-        return model.state_dict(), sum(epoch_loss) / len(epoch_loss), control_delta, time.time()- start_time
+        return model.state_dict(), sum(epoch_loss) / len(epoch_loss), control_delta, local_delta, time.time()- start_time
 
     def inference(self, model):
         """ Returns the inference accuracy and loss.
