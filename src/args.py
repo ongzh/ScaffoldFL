@@ -63,7 +63,7 @@ def args_parser():
                         help='rounds of early stopping')
     parser.add_argument('--verbose', type=int, default=1, help='verbose')
     parser.add_argument('--seed', type=int, default=1, help='random seed')
-    parser.add_argument('--u', type=float, default=0.0, help='proximal term constant')
+    parser.add_argument('--mu', type=float, default=0.0, help='proximal term constant')
     parser.add_argument('--stragglers', type=float, default=0, help='percentage of stragglers')
     args = parser.parse_args()
     return args
