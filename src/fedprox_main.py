@@ -207,7 +207,7 @@ if __name__ == '__main__':
     plt.ylabel('Test Accuracy')
     plt.xlabel('Communication Rounds')
     plt.ylim([0.1, 1])
-    plt.savefig('../save/fedPROX_{}_{}_{}_C[{}]_iid[{}]_E[{}]_B[{}]_LR[{}]_u[{}]_%strag[{}]_test_acc.png'.
+    plt.savefig('../save/fedPROX_{}_{}_{}_C[{}]_iid[{}]_E[{}]_B[{}]_LR[{}]_mu[{}]_%strag[{}]_test_acc.png'.
                 format(args.dataset, args.model, args.epochs, args.frac,
-                       args.iid, args.local_ep, args.local_bs, args.lr, args.u, args.stragglers))
+                       args.iid, args.local_ep, args.local_bs, args.lr, args.mu, args.stragglers))
 
