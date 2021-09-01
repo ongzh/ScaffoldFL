@@ -161,7 +161,7 @@ if __name__ == '__main__':
     # Saving the objects train_loss and train_accuracy:
     file_name = '../save/objects/{}_{}_{}_C[{}]_iid[{}]_E[{}]_B[{}]_LR[{}]_u[{}]_%strag[{}].pkl'.\
         format(args.dataset, args.model, args.epochs, args.frac, args.iid,
-               args.local_ep, args.local_bs, args.lr,args.u, args.stragglers)
+               args.local_ep, args.local_bs, args.lr,args.mu, args.stragglers)
 
     with open(file_name, 'wb') as f:
         pickle.dump([train_loss, train_accuracy], f)
