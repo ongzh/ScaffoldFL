@@ -172,7 +172,7 @@ if __name__ == '__main__':
     res = np.asarray([test_acc_list])
     res_name = '../save/csvResults/{}_{}_{}_C[{}]_iid[{}]_E[{}]_B[{}]_LR[{}]_u[{}]_%strag[{}].csv'. \
         format(args.dataset, args.model, args.epochs, args.frac, args.iid,
-               args.local_ep, args.local_bs, args.lr, args.u, args.stragglers)
+               args.local_ep, args.local_bs, args.lr, args.mu, args.stragglers)
     np.savetxt(res_name, res, delimiter=",")
 
     # PLOTTING (optional)
