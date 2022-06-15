@@ -1,5 +1,5 @@
 # Federated Learning (Scaffold and Fedprox) using PyTorch
-**Implementation of:** <br>
+**Basic Implementation of:** <br>
 **Fedprox:**  [https://arxiv.org/abs/1910.06378](https://arxiv.org/abs/1812.06127) <br>
 **Scaffold:** [SCAFFOLD: Stochastic Controlled Averaging for Federated Learning](https://arxiv.org/abs/1812.06127) <br>
 
