@@ -22,7 +22,7 @@ DataSet: Cifar10
 
 
 ### Note
-Non-iid implementation and dataset used differ from the Scaffold Paper. <br>
+Non-IID implementation and dataset used differ from the Scaffold Paper. <br>
 Sections of code inspired from FedAvg implementation by https://github.com/AshwinRJ/Federated-Learning-PyTorch
 
 
